@@ -35,13 +35,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidlearning.ui.theme.Pink80
 import com.example.androidlearning.ui.theme.VkEducationTheme
 import coil3.compose.AsyncImage
+import com.example.androidlearning.Domain.AppData
+import com.example.androidlearning.Presentation.AppDataViewModel
+import com.example.androidlearning.Presentation.AppDetailsState
+import com.example.androidlearning.Presentation.ScreenEvent
 
 
 //hardcoded data
@@ -154,7 +157,8 @@ fun ToolBar(
 
 @Composable
 fun AppCard(modifier: Modifier = Modifier,
-            appData: AppData){
+            appData: AppData
+){
     Row(modifier= modifier){
 
         AsyncImage(
@@ -173,7 +177,8 @@ fun AppCard(modifier: Modifier = Modifier,
 
 @Composable
 fun AppInfo(modifier: Modifier= Modifier,
-            appData: AppData){
+            appData: AppData
+){
 
     Column(modifier=modifier){
         Text(appData.appName, fontWeight = FontWeight.Bold)

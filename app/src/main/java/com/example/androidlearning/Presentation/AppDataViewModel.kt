@@ -1,12 +1,15 @@
-package com.example.androidlearning
+package com.example.androidlearning.Presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.androidlearning.Data.AppDataRepositoryImpl
+import com.example.androidlearning.Domain.AppDataRepository
+import com.example.androidlearning.Domain.GetAppDataUseCase
+import com.example.androidlearning.Domain.GetAppDataUseCaseImpl
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
@@ -16,8 +19,13 @@ import kotlin.time.Duration.Companion.seconds
 sealed interface ScreenEvent{
     data class ShowSnackbar(val message: String) : ScreenEvent
 }
-class AppDataViewModel(repositoty: AppDataRepositoty = AppDataRepositoty()) : ViewModel() {
-    private val _repositoty = repositoty
+class AppDataViewModel(private val repository: AppDataRepository = AppDataRepositoryImpl()) : ViewModel() {
+    private val _repository = repository
+
+    private val getAppDataUseCase: GetAppDataUseCase = GetAppDataUseCaseImpl(
+        repository=_repository
+    )
+
     private val _state = MutableStateFlow<AppDetailsState>(
         AppDetailsState.Loading
     )
@@ -48,7 +56,7 @@ class AppDataViewModel(repositoty: AppDataRepositoty = AppDataRepositoty()) : Vi
                 delay(3.seconds)
 
                 _state.value = AppDetailsState.Content(
-                    appData = _repositoty.getData()
+                    appData = getAppDataUseCase()
                 )
             }.onFailure { e ->
                 if (e is CancellationException) throw e   // не глотаем отмену

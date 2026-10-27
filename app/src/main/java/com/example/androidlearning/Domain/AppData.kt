@@ -1,4 +1,4 @@
-package com.example.androidlearning
+package com.example.androidlearning.Domain
 
 data class AppData(
     val appName: String,
