@@ -56,8 +56,7 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
     fun getData(){
         viewModelScope.launch {
             runCatching {
-                //hard work imitation
-                delay(3.seconds)
+
 
                 _state.value = AppDetailsState.Content(
                     appData = getAppDataUseCase()

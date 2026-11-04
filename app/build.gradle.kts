@@ -65,4 +65,7 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.57.1")
     ksp("com.google.dagger:hilt-android-compiler:2.57.1")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Сама библиотека Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Конвертер для работы с JSON
 }

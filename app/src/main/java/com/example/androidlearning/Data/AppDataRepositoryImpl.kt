@@ -1,5 +1,6 @@
 package com.example.androidlearning.Data
 
+import com.example.androidlearning.Data.API.AppDataAPI
 import com.example.androidlearning.Domain.AppData
 import com.example.androidlearning.Domain.AppDataRepository
 import jakarta.inject.Inject
@@ -8,32 +9,8 @@ class AppDataRepositoryImpl @Inject constructor(
     private val api: AppDataAPI,
 ) : AppDataRepository {
 
-    fun getData(): List<AppData>{
-        val AppList = listOf(
-            AppData(
-                "Game 1",
-                "Strategy",
-                "Description 1, pretty small",
-                "https://picsum.photos/200/200"
-            ),
-            AppData(
-                "Game 2", "Economical", "Description 2, pretty big pretty" +
-                        " big pretty big pretty " + " big pretty big pretty " +
-                        "big pretty big pretty big", "https://picsum.photos/200/200"
-            ),
-            AppData("Game 3", "Adventure", "Decription 3", "https://picsum.photos/200/200"),
-            AppData("Game 4", "Action", "Description 4", "https://picsum.photos/200/200"),
-            AppData("Game 5", "Strategy", null, "https://picsum.photos/200/200"),
-            AppData("Game 6", null, "Description 6", "https://picsum.photos/200/200"),
-            AppData("Game 7", "Strategy", "Description 7", "https://picsum.photos/200/200"),
-            AppData("Game 8", "Strategy", "Description 8", "https://picsum.photos/200/200")
-        )
-
-        return AppList
-    }
-
     override suspend fun get(): List<AppData> {
-        val data = api.get()
+        val data = api.getAll()
         return data.map{it -> AppDataMapper.map(it)}
     }
 }

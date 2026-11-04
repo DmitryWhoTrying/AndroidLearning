@@ -183,7 +183,7 @@ fun AppInfo(modifier: Modifier= Modifier,
 ){
 
     Column(modifier=modifier){
-        Text(appData.appName, fontWeight = FontWeight.Bold)
+        Text(appData.appName?: "Не указано", fontWeight = FontWeight.Bold)
         Text(appData.appGenre ?: "Другое", fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
         Text(appData.appDescription ?: "Без описания", maxLines = 2, overflow = TextOverflow.Ellipsis)
     }
