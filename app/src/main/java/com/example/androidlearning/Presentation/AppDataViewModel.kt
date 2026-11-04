@@ -6,6 +6,8 @@ import com.example.androidlearning.Data.AppDataRepositoryImpl
 import com.example.androidlearning.Domain.AppDataRepository
 import com.example.androidlearning.Domain.GetAppDataUseCase
 import com.example.androidlearning.Domain.GetAppDataUseCaseImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,9 @@ import kotlin.time.Duration.Companion.seconds
 sealed interface ScreenEvent{
     data class ShowSnackbar(val message: String) : ScreenEvent
 }
-class AppDataViewModel(private val repository: AppDataRepository = AppDataRepositoryImpl()) : ViewModel() {
+
+@HiltViewModel
+class AppDataViewModel @Inject constructor(private val repository: AppDataRepository ) : ViewModel() {
     private val _repository = repository
 
     private val getAppDataUseCase: GetAppDataUseCase = GetAppDataUseCaseImpl(

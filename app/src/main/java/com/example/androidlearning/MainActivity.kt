@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidlearning.ui.theme.Pink80
 import com.example.androidlearning.ui.theme.VkEducationTheme
 import coil3.compose.AsyncImage
@@ -45,6 +44,8 @@ import com.example.androidlearning.Domain.AppData
 import com.example.androidlearning.Presentation.AppDataViewModel
 import com.example.androidlearning.Presentation.AppDetailsState
 import com.example.androidlearning.Presentation.ScreenEvent
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
 
 
 //hardcoded data
@@ -53,7 +54,7 @@ import com.example.androidlearning.Presentation.ScreenEvent
 fun AppScreen(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    viewModel: AppDataViewModel = viewModel()
+    viewModel: AppDataViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel.events) {
@@ -108,6 +109,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

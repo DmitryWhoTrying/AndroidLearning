@@ -1,9 +1,10 @@
 package com.example.androidlearning.Data
 
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
-class AppDataAPI {
+class AppDataAPI @Inject constructor() {
     suspend fun get(): List<AppDataDTO>{
         delay(1500.milliseconds)
         return listOf(AppDataDTO(

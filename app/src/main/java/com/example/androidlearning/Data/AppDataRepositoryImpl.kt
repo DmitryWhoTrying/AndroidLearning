@@ -2,8 +2,12 @@ package com.example.androidlearning.Data
 
 import com.example.androidlearning.Domain.AppData
 import com.example.androidlearning.Domain.AppDataRepository
+import jakarta.inject.Inject
 
-class AppDataRepositoryImpl: AppDataRepository {
+class AppDataRepositoryImpl @Inject constructor(
+    private val api: AppDataAPI,
+) : AppDataRepository {
+
     fun getData(): List<AppData>{
         val AppList = listOf(
             AppData(
@@ -29,7 +33,7 @@ class AppDataRepositoryImpl: AppDataRepository {
     }
 
     override suspend fun get(): List<AppData> {
-        val data = AppDataAPI().get()
+        val data = api.get()
         return data.map{it -> AppDataMapper.map(it)}
     }
 }
