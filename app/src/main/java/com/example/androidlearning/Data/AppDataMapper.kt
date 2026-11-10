@@ -8,6 +8,7 @@ class AppDataMapper {
     companion object{
         fun map(dto: AppDataDTO): AppData{
             return AppData(
+                id = null,
                 appName = dto.appName,
                 appGenre = dto.appGenre,
                 appDescription = dto.appDescription,
@@ -17,6 +18,7 @@ class AppDataMapper {
 
         fun map(compact: AppDataCompact): AppData{
             return AppData(
+                id = compact.id,
                 appName = compact.name,
                 appGenre = compact.category,
                 appDescription = compact.description,
@@ -26,6 +28,7 @@ class AppDataMapper {
 
         fun map(full: AppDataFull): AppData{
             return AppData(
+                id = full.id,
                 appName = full.name,
                 appGenre = full.category,
                 appDescription = full.description,

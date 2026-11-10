@@ -44,6 +44,7 @@ import com.example.androidlearning.Domain.AppData
 import com.example.androidlearning.Presentation.AppDataViewModel
 import com.example.androidlearning.Presentation.AppDetailsState
 import com.example.androidlearning.Presentation.ScreenEvent
+import com.example.androidlearning.composables.AppCardScreen
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -69,11 +70,21 @@ fun AppScreen(
 
     when (val s = state) {
         is AppDetailsState.Loading -> LoadingScreen(modifier = modifier)
-        is AppDetailsState.Content -> AppListScreen(
-            appList = s.appData,
-            onToolbarClick = { viewModel.processToolbarClick() },
-            modifier = modifier
-        )
+        is AppDetailsState.Content -> {
+            if (s.selectedApp != null) {
+                AppCardScreen(
+                    viewModel = viewModel,
+                    modifier = modifier
+                )
+            } else {
+                AppListScreen(
+                    appList = s.appData,
+                    onToolbarClick = { viewModel.processToolbarClick() },
+                    onAppClick = { appId -> viewModel.onAppClick(appId) },
+                    modifier = modifier
+                )
+            }
+        }
     }
 }
 
@@ -81,6 +92,7 @@ fun AppScreen(
 fun AppListScreen(
     appList: List<AppData>,
     onToolbarClick: () -> Unit = {},
+    onAppClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -91,10 +103,13 @@ fun AppListScreen(
                 .padding(start = 10.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            appList.forEach {
+            appList.forEach { app ->
                 AppCard(
                     modifier = Modifier.padding(vertical = 10.dp),
-                    appData = it
+                    appData = app,
+                    onClick = {
+                        app.id?.let { id -> onAppClick(id) }
+                    }
                 )
             }
         }
@@ -158,10 +173,14 @@ fun ToolBar(
 }
 
 @Composable
-fun AppCard(modifier: Modifier = Modifier,
-            appData: AppData
+fun AppCard(
+    modifier: Modifier = Modifier,
+    appData: AppData,
+    onClick: () -> Unit
 ){
-    Row(modifier= modifier){
+    Row(
+        modifier = modifier.clickable { onClick() }
+    ){
 
         AsyncImage(
             model = appData.imagePath,
@@ -185,6 +204,7 @@ fun AppInfo(modifier: Modifier= Modifier,
     Column(modifier=modifier){
         Text(appData.appName?: "Не указано", fontWeight = FontWeight.Bold)
         Text(appData.appGenre ?: "Другое", fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
+        Text(appData.rating?.toString() ?: "Без рейтинга", fontWeight = FontWeight.Bold)
         Text(appData.appDescription ?: "Без описания", maxLines = 2, overflow = TextOverflow.Ellipsis)
     }
 

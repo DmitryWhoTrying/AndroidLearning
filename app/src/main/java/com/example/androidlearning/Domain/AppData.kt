@@ -1,6 +1,7 @@
 package com.example.androidlearning.Domain
 
 data class AppData(
+    val id: String? = null,
     val appName: String?,
     val appGenre: String?,
     val appDescription: String?,
@@ -8,5 +9,6 @@ data class AppData(
     val screenshots: List<String>? = null,
     val appSize: Double? = null,
     val appAgeRating: Int? = null,
-    var screenshotUrlList: List<String>? = null
+    var screenshotUrlList: List<String>? = null,
+    var rating: Float? = null
 )

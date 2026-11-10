@@ -1,4 +1,4 @@
-package com.example.androidlearning.composables
+package com.example.androidlearning.model
 
 data class AppDetails(
     val id: String,

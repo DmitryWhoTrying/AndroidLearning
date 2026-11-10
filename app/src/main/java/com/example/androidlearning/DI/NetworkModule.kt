@@ -14,7 +14,7 @@ import com.example.androidlearning.Data.API.AppDataAPI
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    //по хорошему из local.properties тянуть наверное, но пока так
+    //по хорошему из local.properties тянуть, но пока так
     //http://185.103.109.134
     @Provides
     @Singleton

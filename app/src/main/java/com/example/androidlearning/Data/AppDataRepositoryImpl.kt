@@ -13,4 +13,8 @@ class AppDataRepositoryImpl @Inject constructor(
         val data = api.getAll()
         return data.map{it -> AppDataMapper.map(it)}
     }
+    override suspend fun getAppFull(appId: String): AppData {
+        val data = api.getById(appId)
+        return AppDataMapper.map(data)
+    }
 }
