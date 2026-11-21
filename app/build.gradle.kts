@@ -58,6 +58,18 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
 
+    //tests
+    // Required -- JUnit 4 framework
+    testImplementation(libs.junit.junit)
+    // Optional -- Robolectric environment
+    testImplementation(libs.androidx.core)
+    // Optional -- Mockito framework
+    testImplementation(libs.mockito.core)
+    // Optional -- mockito-kotlin
+    testImplementation(libs.mockito.kotlin)
+    // Optional -- Mockk framework
+    testImplementation(libs.mockk)
+
     //implementation(libs.coil.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
