@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -56,7 +58,8 @@ fun AppCardScreen(
     viewModel: AppDataViewModel,
     modifier: Modifier = Modifier,
     onInstallClick: () -> Unit = { viewModel.onInstallClick() },
-    onBackClick: (() -> Unit)? = { viewModel.onBackClick() }
+    onBackClick: (() -> Unit)? = { viewModel.onBackClick() },
+    onWishlistClick: (String) -> Unit = { appId -> viewModel.toggleWishlist(appId) }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -64,11 +67,17 @@ fun AppCardScreen(
         is AppDetailsState.Loading -> {
             LoadingScreen(modifier = modifier)
         }
+        is AppDetailsState.Error -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Ошибка загрузки данных")
+            }
+        }
         is AppDetailsState.Content -> {
             AppCardContent(
                 content = s,
                 onInstallClick = onInstallClick,
                 onBackClick = onBackClick,
+                onWishlistClick = onWishlistClick,
                 modifier = modifier
             )
         }
@@ -80,17 +89,23 @@ fun AppCardContent(
     content: AppDetailsState.Content,
     onInstallClick: () -> Unit,
     onBackClick: (() -> Unit)? = null,
+    onWishlistClick: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val appData = content.selectedApp ?: content.appData.firstOrNull() ?: return
     var descriptionCollapsed by remember { mutableStateOf(false) }
+    val isInWishlist = content.appDetails?.isInWishlist ?: false
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Toolbar(onBackClick = onBackClick)
+        Toolbar(
+            isInWishlist = isInWishlist,
+            onBackClick = onBackClick,
+            onWishlistClick = { appData.id?.let { id -> onWishlistClick?.invoke(id) } }
+        )
         Spacer(Modifier.height(8.dp))
 
         AppDetailsHeader(
@@ -139,7 +154,9 @@ fun AppCardContent(
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
+    isInWishlist: Boolean = false,
     onBackClick: (() -> Unit)? = null,
+    onWishlistClick: (() -> Unit)? = null,
     onShareClick: (() -> Unit)? = null
 ) {
     Row(
@@ -160,15 +177,25 @@ fun Toolbar(
             Spacer(Modifier.size(48.dp))
         }
 
-        if (onShareClick != null) {
-            IconButton(onClick = onShareClick) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "Share"
-                )
+        Row {
+            if (onWishlistClick != null) {
+                IconButton(onClick = onWishlistClick) {
+                    Icon(
+                        imageVector = if (isInWishlist) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Wishlist",
+                        tint = if (isInWishlist) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-        } else {
-            Spacer(Modifier.size(48.dp))
+
+            if (onShareClick != null) {
+                IconButton(onClick = onShareClick) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share"
+                    )
+                }
+            }
         }
     }
 }

@@ -70,6 +70,11 @@ fun AppScreen(
 
     when (val s = state) {
         is AppDetailsState.Loading -> LoadingScreen(modifier = modifier)
+        is AppDetailsState.Error -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Ошибка загрузки данных")
+            }
+        }
         is AppDetailsState.Content -> {
             if (s.selectedApp != null) {
                 AppCardScreen(

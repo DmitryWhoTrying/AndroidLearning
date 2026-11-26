@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidlearning.Domain.AppData
 import com.example.androidlearning.Domain.AppDataRepository
+import com.example.androidlearning.Domain.AppDetailsRepository
 import com.example.androidlearning.Domain.GetAppDataUseCase
 import com.example.androidlearning.Domain.GetAppDataUseCaseImpl
 import com.example.androidlearning.Domain.GetAppRatingUseCase
@@ -21,21 +22,22 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.math.log
 import kotlin.system.measureTimeMillis
-import kotlin.time.Duration.Companion.seconds
-
 
 sealed interface ScreenEvent{
     data class ShowSnackbar(val message: String) : ScreenEvent
 }
 
 @HiltViewModel
-class AppDataViewModel @Inject constructor(private val repository: AppDataRepository ) : ViewModel() {
+class AppDataViewModel @Inject constructor(
+    private val repository: AppDataRepository,
+    private val appDetailsRepository: AppDetailsRepository,
+) : ViewModel() {
     private val _repository = repository
 
     private val getAppDataUseCase: GetAppDataUseCase = GetAppDataUseCaseImpl(
@@ -52,12 +54,12 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
         AppDetailsState.Loading
     )
     private var installJob: Job? = null
+    private var observeDetailsJob: Job? = null
     val state = _state.asStateFlow()
 
     init {
         getData()
     }
-
 
     fun onInstallClick() {
         val current = _state.value
@@ -102,7 +104,7 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
 
     private val _events = Channel<ScreenEvent>(
         Channel.BUFFERED,
-        )
+    )
     val events = _events.receiveAsFlow()
 
     fun processToolbarClick(){
@@ -112,6 +114,7 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
             )
         }
     }
+
     fun getData(){
         viewModelScope.launch {
             runCatching {
@@ -123,8 +126,7 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
                 )
                 getRatings(apps.mapNotNull { it.id })
             }.onFailure { e ->
-                if (e is CancellationException) throw e   // не глотаем отмену
-                // здесь можно завести AppDetailsState.Error(e.message ?: "Unknown")
+                if (e is CancellationException) throw e
             }
         }
     }
@@ -158,13 +160,53 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
                 current.copy(selectedApp = selected)
             }
         }
+        observeAppDetails(appId)
+        fetchAndSaveAppDetails(appId)
         getFullData(appId)
     }
 
+    private fun observeAppDetails(appId: String) {
+        observeDetailsJob?.cancel()
+        observeDetailsJob = viewModelScope.launch {
+            appDetailsRepository.observeAppDetails(appId)
+                .catch { _state.value = AppDetailsState.Error }
+                .collect { appDetails ->
+                    _state.update { current ->
+                        if (current is Content) {
+                            current.copy(
+                                appDetails = appDetails,
+                                descriptionCollapsed = false
+                            )
+                        } else {
+                            Content(
+                                appDetails = appDetails,
+                                descriptionCollapsed = false
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun fetchAndSaveAppDetails(appId: String) {
+        viewModelScope.launch {
+            runCatching {
+                appDetailsRepository.fetchAndSaveAppDetails(appId)
+            }
+        }
+    }
+
+    fun toggleWishlist(appId: String) {
+        viewModelScope.launch {
+            appDetailsRepository.toggleWishlist(appId)
+        }
+    }
+
     fun onBackClick() {
+        observeDetailsJob?.cancel()
         _state.update { current ->
             if (current is Content) {
-                current.copy(selectedApp = null)
+                current.copy(selectedApp = null, appDetails = null)
             } else current
         }
     }
@@ -209,7 +251,6 @@ class AppDataViewModel @Inject constructor(private val repository: AppDataReposi
                     )
                 } else current
             }
-
         }
     }
 }

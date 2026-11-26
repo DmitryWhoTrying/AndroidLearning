@@ -15,6 +15,7 @@ composeBom = "2026.02.01"
 lifecycleViewmodelCompose = "2.11.0"
 mockito = "5.11.0"
 mockitoKotlin = "5.4.0"
+room = "2.8.5"
 navigationCompose = "2.10.2"
 hiltNavigationCompose = "1.2.0"
 
@@ -46,6 +47,9 @@ junit-junit = { module = "junit:junit" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 mockk = { module = "io.mockk:mockk", version = "1.13.12" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
