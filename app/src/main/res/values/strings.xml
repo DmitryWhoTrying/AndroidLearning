@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidLearning</string>
+    <string name="app_details_description">Описание</string>>
+    <string name="app_details_read_more">Больше</string>>
 </resources>
